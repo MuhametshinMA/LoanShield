@@ -1,8 +1,8 @@
 FROM maven:3.8.5-openjdk-17 AS builder
 WORKDIR /app
 
-COPY app/pom.xml .
-COPY app/src ./src
+COPY pom.xml .
+COPY src ./src
 
 RUN mvn clean package
 FROM openjdk:17-jdk-slim

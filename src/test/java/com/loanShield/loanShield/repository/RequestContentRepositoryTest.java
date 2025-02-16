@@ -37,19 +37,19 @@ public class RequestContentRepositoryTest {
 
     @Test
     public void testSaveMultipleJsonFromFile() throws IOException {
-//        ObjectMapper objectMapper = new ObjectMapper();
-//
-//        // Load JSON data from file
-//        ClassPathResource resource = new ClassPathResource("test-data.json");
-//        InputStream inputStream = resource.getInputStream();
-//        List<Object> jsonDataList = objectMapper.readValue(inputStream, new TypeReference<List<Object>>() {});
-//
-////         Save JSON data to database
-//        for (Object jsonData : jsonDataList) {
-//            RequestContent requestContent = new RequestContent();
-//            requestContent.setJsonData(objectMapper.writeValueAsString(jsonData));
-//            requestContentRepository.save(requestContent);
-//        }
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        // Load JSON data from file
+        ClassPathResource resource = new ClassPathResource("test-data.json");
+        InputStream inputStream = resource.getInputStream();
+        List<Object> jsonDataList = objectMapper.readValue(inputStream, new TypeReference<List<Object>>() {});
+
+//         Save JSON data to database
+        for (Object jsonData : jsonDataList) {
+            RequestContent requestContent = new RequestContent();
+            requestContent.setJsonData(objectMapper.writeValueAsString(jsonData));
+            requestContentRepository.save(requestContent);
+        }
 //
 //        // Retrieve JSON data from database and verify
 //        List<RequestContent> allContents = requestContentRepository.findAll();

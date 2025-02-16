@@ -31,4 +31,12 @@ public class RequestContent {
 
     @OneToOne(mappedBy = "requestContent", cascade = CascadeType.ALL, orphanRemoval = true)
     private LoanRequest loanRequest;
+
+    @Override
+    public String toString() {
+        return "RequestContent{" +
+                "id=" + id +
+                ", jsonData='" + jsonData + '\'' +
+                '}';
+    }
 }

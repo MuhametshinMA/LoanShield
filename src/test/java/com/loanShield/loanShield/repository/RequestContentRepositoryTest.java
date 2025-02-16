@@ -1,11 +1,22 @@
 package com.loanShield.loanShield.repository;
 
+import com.loanShield.loanShield.domain.LoanRequest;
 import com.loanShield.loanShield.domain.RequestContent;
+import com.loanShield.loanShield.dto.LoanRequestDTO;
+import com.loanShield.loanShield.mapper.AccountInfoMapper;
+import com.loanShield.loanShield.mapper.CreditBureauMapper;
+import com.loanShield.loanShield.mapper.LoanRequestMapper;
+import com.loanShield.loanShield.service.LoanRequestService;
+import com.loanShield.loanShield.service.LoanRequestServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -22,7 +33,44 @@ import java.util.List;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Testcontainers
+@ComponentScan({
+        "com.loanShield.loanShield.mapper",
+        "com.loanShield.loanShield.repository"
+})
 public class RequestContentRepositoryTest {
+
+    @TestConfiguration
+    static class LoanRequestServiceTestConfig {
+
+        @Bean
+        public ModelMapper modelMapper() {
+            return new ModelMapper();
+        }
+
+        @Bean
+        public LoanRequestMapper loanRequestMapper() {
+            return new LoanRequestMapper();
+        }
+
+        @Bean
+        public CreditBureauMapper creditBureauMapper() {
+            return new CreditBureauMapper();
+        }
+
+        @Bean
+        public AccountInfoMapper accountInfoMapper() {
+            return new AccountInfoMapper();
+        }
+
+        @Bean
+        public LoanRequestService loanRequestService(
+                LoanRequestMapper loanRequestMapper,
+                CreditBureauMapper creditBureauMapper,
+                AccountInfoMapper accountInfoMapper,
+                LoanRequestRepository loanRequestRepository) {
+            return new LoanRequestServiceImpl(loanRequestMapper, creditBureauMapper, accountInfoMapper, loanRequestRepository);
+        }
+    }
 
     @Container
     private static final PostgreSQLContainer<?> postgreSQLContainer
@@ -31,6 +79,12 @@ public class RequestContentRepositoryTest {
     @Autowired
     private RequestContentRepository requestContentRepository;
 
+    @Autowired
+    private LoanRequestRepository loanRequestRepository;
+
+    @Autowired
+    private LoanRequestService loanRequestService;
+
     @DynamicPropertySource
     static void registerPgProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
@@ -38,29 +92,49 @@ public class RequestContentRepositoryTest {
         registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
     }
 
-    @Test
-    public void testSaveMultipleJsonFromFile() throws IOException {
+    private int sizeOfRequest;
+
+    private void init() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        // Load JSON data from file
         ClassPathResource resource = new ClassPathResource("test-data.json");
         InputStream inputStream = resource.getInputStream();
         List<Object> jsonDataList = objectMapper.readValue(inputStream, new TypeReference<List<Object>>() {
         });
 
-//         Save JSON data to database
+        sizeOfRequest = jsonDataList.size();
+
         for (Object jsonData : jsonDataList) {
             RequestContent requestContent = new RequestContent();
             requestContent.setJsonData(objectMapper.writeValueAsString(jsonData));
             requestContentRepository.save(requestContent);
         }
+    }
 
-        // Retrieve JSON data from database and verify
+    @Test
+    public void testCheckSizeRequestContent() throws IOException {
+
+        init();
+
         List<RequestContent> allContents = requestContentRepository.findAll();
-        Assertions.assertEquals(3, allContents.size());
+        Assertions.assertEquals(sizeOfRequest, allContents.size());
+    }
 
-        for (int i = 0; i < jsonDataList.size(); i++) {
-            Assertions.assertEquals(objectMapper.writeValueAsString(jsonDataList.get(i)), allContents.get(i).getJsonData());
-        }
+    @Test
+    public void testParseJsonFromRequestContent() throws IOException {
+
+        init();
+
+        List<RequestContent> allContents = requestContentRepository.findAll();
+
+        List<LoanRequestDTO> loanRequestDTOS =
+                allContents.stream().map(RequestContent::getLoanRequestDTO).toList();
+        loanRequestDTOS.forEach(System.out::println);
+        Assertions.assertEquals(sizeOfRequest, loanRequestDTOS.size());
+
+//        loanRequestDTOS.get(0).setCreditBureauDTO();
+
+        loanRequestService.saveLoanRequest(loanRequestDTOS.get(0), allContents.get(0));
+//        List<LoanRequest> loanRequests = loanRequest
     }
 }

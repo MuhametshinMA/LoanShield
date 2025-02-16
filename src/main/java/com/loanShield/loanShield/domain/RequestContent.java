@@ -1,5 +1,8 @@
 package com.loanShield.loanShield.domain;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.loanShield.loanShield.dto.LoanRequestDTO;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,6 +16,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+
+import java.io.IOException;
 
 @Entity
 @Table(name = "request_content")
@@ -31,6 +36,17 @@ public class RequestContent {
 
     @OneToOne(mappedBy = "requestContent", cascade = CascadeType.ALL, orphanRemoval = true)
     private LoanRequest loanRequest;
+
+    public LoanRequestDTO getLoanRequestDTO() {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            return objectMapper.readValue(jsonData, LoanRequestDTO.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     @Override
     public String toString() {

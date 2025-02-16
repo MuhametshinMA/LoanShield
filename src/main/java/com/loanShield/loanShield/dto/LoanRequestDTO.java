@@ -4,15 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class LoanRequest {
+public class LoanRequestDTO {
 
     @JsonProperty("loanRequestID")
     private String loanRequestID;
     @JsonProperty("regPerson")
-    private RegPerson regPerson;
+    private RegPersonDTO regPersonDTO;
     @JsonProperty("creditBureau")
-    private CreditBureau creditBureau;
-    @JsonProperty("verifiedName")
-    private VerifiedName verifiedName;
+    private CreditBureauDTO creditBureauDTO;
 }
 

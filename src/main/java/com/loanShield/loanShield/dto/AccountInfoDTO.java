@@ -6,7 +6,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class AccountInfo {
+public class AccountInfoDTO {
 
     @JsonProperty("account_number")
     private String accountNumber;

@@ -3,9 +3,10 @@ package com.loanShield.loanShield.dto;
 import lombok.Data;
 
 @Data
-public class RegPerson {
+public class RegPersonDTO {
 
     private String firstName;
+    private String middleName;
     private String lastName;
 }
 

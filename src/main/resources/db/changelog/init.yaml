@@ -1,0 +1,183 @@
+# db/changelog/initial-structure.yaml
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: MaratMuhametshin
+      changes:
+        - preConditions:
+            onFail: MARK_RAN
+            not:
+              tableExists:
+                tableName: request_content
+        - createTable:
+            tableName: request_content
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: json_data
+                  type: jsonb
+  - changeSet:
+      id: 2
+      author: MaratMuhametshin
+      changes:
+        - preConditions:
+            onFail: MARK_RAN
+            not:
+              tableExists:
+                tableName: loan_request
+        - createTable:
+            tableName: loan_request
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: id_request_content
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: loanRequestID
+                  type: VARCHAR(255)
+              - column:
+                  name: regPerson_firstName
+                  type: VARCHAR(255)
+              - column:
+                  name: regPerson_middleName
+                  type: VARCHAR(255)
+              - column:
+                  name: regPerson_lastName
+                  type: VARCHAR(255)
+        - addForeignKeyConstraint:
+            baseTableName: loan_request
+            baseColumnNames: id_request_content
+            constraintName: fk_loan_request_request_content
+            referencedTableName: request_content
+            referencedColumnNames: id
+
+
+  - changeSet:
+      id: 3
+      author: MaratMuhametshin
+      changes:
+        - preConditions:
+            onFail: MARK_RAN
+            not:
+              tableExists:
+                tableName: credit_bureau
+        - createTable:
+            tableName: credit_bureau
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: id_loan_request
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: verified_name_firstName
+                  type: VARCHAR(255)
+              - column:
+                  name: verified_name_otherName
+                  type: VARCHAR(255)
+              - column:
+                  name: verified_name_surname
+                  type: VARCHAR(255)
+        - addForeignKeyConstraint:
+            baseTableName: credit_bureau
+            baseColumnNames: id_loan_request
+            constraintName: fk_credit_bureau_loan_request
+            referencedTableName: loan_request
+            referencedColumnNames: id
+
+  - changeSet:
+      id: 4
+      author: MaratMuhametshin
+      changes:
+        - preConditions:
+            onFail: MARK_RAN
+            not:
+              tableExists:
+                tableName: account_info
+        - createTable:
+            tableName: account_info
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: id_credit_bureau
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: account_number
+                  type: VARCHAR(255)
+              - column:
+                  name: account_status
+                  type: VARCHAR(255)
+              - column:
+                  name: current_balance
+                  type: DECIMAL
+              - column:
+                  name: date_opened
+                  type: DATE
+              - column:
+                  name: days_in_arrears
+                  type: INTEGER
+              - column:
+                  name: delinquency_code
+                  type: VARCHAR(255)
+              - column:
+                  name: highest_days_in_arrears
+                  type: INTEGER
+              - column:
+                  name: is_your_account
+                  type: BOOLEAN
+              - column:
+                  name: last_payment_amount
+                  type: DECIMAL
+              - column:
+                  name: last_payment_date
+                  type: DATE
+              - column:
+                  name: loaded_at
+                  type: DATE
+              - column:
+                  name: original_amount
+                  type: DECIMAL
+              - column:
+                  name: overdue_balance
+                  type: DECIMAL
+              - column:
+                  name: overdue_date
+                  type: DATE
+              - column:
+                  name: product_type_id
+                  type: INTEGER
+        - addForeignKeyConstraint:
+            baseTableName: account_info
+            baseColumnNames: id_credit_bureau
+            constraintName: fk_account_info_credit_bureau
+            referencedTableName: credit_bureau
+            referencedColumnNames: id

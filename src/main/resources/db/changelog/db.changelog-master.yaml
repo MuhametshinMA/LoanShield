@@ -1,0 +1,6 @@
+# db/changelog/db.changelog-master.yaml
+databaseChangeLog:
+  - include:
+      file: db/changelog/init.yaml
+  - include:
+      file: db/changelog/add-one-to-one-relationship-credit-bureau-loan-request.yaml

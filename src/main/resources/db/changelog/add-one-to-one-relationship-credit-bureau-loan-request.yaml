@@ -1,0 +1,38 @@
+#add-one-to-one-relationship-credit-bureau-loan-request.yaml
+databaseChangeLog:
+  - changeSet:
+      id: 5
+      author: MaratMuhametshin
+      comment: Add one-to-one relationship between CreditBureau and LoanRequest
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          columnExists:
+            tableName: credit_bureau
+            columnName: id
+      changes:
+        - dropForeignKeyConstraint: # Удаляем существующий внешний ключ
+            baseTableName: credit_bureau
+            constraintName: fk_credit_bureau_loan_request
+        - dropColumn: # Удаляем существующий столбец внешнего ключа
+            tableName: credit_bureau
+            columnName: id_loan_request
+        - addColumn: # Добавляем столбец id с внешним ключом и primaryKey = true
+            tableName: credit_bureau
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+        - addForeignKeyConstraint: # Добавляем constraint на внешний ключ
+            baseTableName: credit_bureau
+            baseColumnNames: id
+            constraintName: fk_credit_bureau_loan_request
+            referencedTableName: loan_request
+            referencedColumnNames: id
+        - addUniqueConstraint: # Добавляем constraint, чтобы связь была один к одному
+            tableName: credit_bureau
+            columnNames: id
+            constraintName: uc_credit_bureau_loan_request

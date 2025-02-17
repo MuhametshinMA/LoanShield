@@ -14,20 +14,20 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  # Сервис для Spring Boot приложения
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: loadShield
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-      SPRING_DATASOURCE_USERNAME: ${DB_USER}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWD}
-    ports:
-      - "8081:8080"
-    depends_on:
-      - postgres
+#  # Сервис для Spring Boot приложения
+#  app:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    container_name: loadShield
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+#      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+#      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWD}
+#    ports:
+#      - "8081:8080"
+#    depends_on:
+#      - postgres
 
 # Том для хранения данных PostgreSQL
 volumes:

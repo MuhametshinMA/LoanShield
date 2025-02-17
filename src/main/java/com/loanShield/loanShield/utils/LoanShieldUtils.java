@@ -26,7 +26,7 @@ public class LoanShieldUtils {
         return pairs;
     }
 
-    private static int calculateDistance(String a, String b) {
+    public static int calculateDistance(String a, String b) {
         int[][] dp = new int[a.length() + 1][b.length() + 1];
 
         for (int i = 0; i <= a.length(); i++) {
@@ -61,16 +61,19 @@ public class LoanShieldUtils {
             return 0.0;
         }
 
-        return (double) distance / maxLength;
+        return (double) distance / (double) maxLength;
     }
 
     public static boolean calcFactor(List<String> arg1, List<String> args2) {
+        if (arg1.isEmpty() || args2.isEmpty()) {
+            return true;
+        }
         double distanceRatioThreshold = 0.9;
         Double maxDistance = arg1.stream()
                 .flatMap(ar1 -> args2.stream()
                         .map(ar2 -> LoanShieldUtils.calculateNormalizedDistance(ar1, ar2)))
                 .max(Double::compare)
-                .orElse(1.0);
+                .orElse(0.0);
         return distanceRatioThreshold > maxDistance;
     }
 }

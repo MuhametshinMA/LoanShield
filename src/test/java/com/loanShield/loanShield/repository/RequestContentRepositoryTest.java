@@ -23,7 +23,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -32,6 +31,7 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 
 @DataJpaTest
@@ -158,8 +158,114 @@ public class RequestContentRepositoryTest {
                     loanRequest.getCreditBureau().getVerifiedNameSurname());
 
             boolean factor = LoanShieldUtils.calcFactor(regPersonNamePairs, verifyNamePairs);
-
-            System.out.println("расчет фактора: " + factor);
         }
+    }
+
+    @Test
+    public void testGeneratePairs() {
+        List<String> expected = Arrays.asList("AB", "AC", "AD", "BA", "BC", "BD", "CA", "CB", "CD", "DA", "DB", "DC");
+
+        List<String> actual = LoanShieldUtils.generatePairs("A", "B", "C", "D");
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testIdenticalStrings() {
+        String str1 = "kitten";
+        String str2 = "kitten";
+        double expectedDistance = 0.0;
+        double actualDistance = LoanShieldUtils.calculateNormalizedDistance(str1, str2);
+        Assertions.assertEquals(expectedDistance, actualDistance, 0.0001);
+    }
+
+    @Test
+    public void testOneInsertion() {
+        String str1 = "kitten";
+        String str2 = "kittens";
+        double expectedDistance = 1.0 / 7;
+        double actualDistance = LoanShieldUtils.calculateNormalizedDistance(str1, str2);
+        Assertions.assertEquals(expectedDistance, actualDistance, 0.0001);
+    }
+
+    @Test
+    public void testOneDeletion() {
+        String str1 = "kittens";
+        String str2 = "kitten";
+        double expectedDistance = 1.0 / 7;
+        double actualDistance = LoanShieldUtils.calculateNormalizedDistance(str1, str2);
+        Assertions.assertEquals(expectedDistance, actualDistance, 0.0001);
+    }
+
+    @Test
+    public void testOneSubstitution() {
+        String str1 = "kitten";
+        String str2 = "sitten";
+        double expectedDistance = 1.0 / 6;
+        double actualDistance = LoanShieldUtils.calculateNormalizedDistance(str1, str2);
+        Assertions.assertEquals(expectedDistance, actualDistance, 0.0001);
+    }
+
+    @Test
+    public void testMultipleOperations() {
+        String str1 = "kitten";
+        String str2 = "sitting";
+        double expectedDistance = 3.0 / 7;
+        double actualDistance = LoanShieldUtils.calculateNormalizedDistance(str1, str2);
+        Assertions.assertEquals(expectedDistance, actualDistance, 0.0001);
+    }
+
+    @Test
+    public void testEmptyString() {
+        String str1 = "kitten";
+        String str2 = "";
+        double expectedDistance = 6.0 / 6;
+        double actualDistance = LoanShieldUtils.calculateNormalizedDistance(str1, str2);
+        Assertions.assertEquals(expectedDistance, actualDistance, 0.0001);
+    }
+
+    @Test
+    public void testDifferentLengths() {
+        String str1 = "abc";
+        String str2 = "defghi";
+        double expectedDistance = 6.0 / 6;
+        double actualDistance = LoanShieldUtils.calculateNormalizedDistance(str1, str2);
+        Assertions.assertEquals(expectedDistance, actualDistance, 0.0001);
+    }
+
+    @Test
+    public void testCompletelyDifferentStrings() {
+        String str1 = "apple";
+        String str2 = "banana";
+        double expectedDistance = 5.0 / 6;
+        double actualDistance = LoanShieldUtils.calculateNormalizedDistance(str1, str2);
+        Assertions.assertEquals(expectedDistance, actualDistance, 0.0001);
+    }
+
+    @Test
+    public void testCalcFactorIdenticalStrings() {
+        List<String> arg1 = Arrays.asList("kitten", "sitting");
+        List<String> arg2 = Arrays.asList("kitten", "sitting");
+
+        boolean result = LoanShieldUtils.calcFactor(arg1, arg2);
+        Assertions.assertTrue(result);
+    }
+
+    @Test
+    public void testCalcFactorSimilarStrings() {
+        List<String> arg1 = Arrays.asList("kitten", "sitting");
+        List<String> arg2 = Arrays.asList("kittens", "sittin");
+
+        boolean result = LoanShieldUtils.calcFactor(arg1, arg2);
+        Assertions.assertTrue(result);
+    }
+
+    @Test
+    public void testCalcFactorSingleElementLists() {
+        List<String> arg1 = Arrays.asList("A");
+        List<String> arg2 = Arrays.asList("B");
+
+        boolean result = LoanShieldUtils.calcFactor(arg1, arg2);
+        Assertions.assertFalse(result);
     }
 }

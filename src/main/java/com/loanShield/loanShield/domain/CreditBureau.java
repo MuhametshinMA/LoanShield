@@ -31,16 +31,16 @@ public class CreditBureau {
     @JoinColumn(name = "id_loan_request")
     private LoanRequest loanRequest;
 
-    @Column(name = "verified_name_firstName")
+    @Column(name = "verified_name_first_name")
     private String verifiedNameFirstName;
 
-    @Column(name = "verified_name_otherName")
+    @Column(name = "verified_name_other_name")
     private String verifiedNameOtherName;
 
     @Column(name = "verified_name_surname")
     private String verifiedNameSurname;
 
-    @OneToMany(mappedBy = "creditBureau", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "id_credit_bureau")
     private List<AccountInfo> accountInfos;
-
 }

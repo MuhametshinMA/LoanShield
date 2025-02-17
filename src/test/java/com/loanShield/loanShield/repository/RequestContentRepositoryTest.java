@@ -1,5 +1,6 @@
 package com.loanShield.loanShield.repository;
 
+import com.loanShield.loanShield.config.NamingStrategyConfig;
 import com.loanShield.loanShield.domain.LoanRequest;
 import com.loanShield.loanShield.domain.RequestContent;
 import com.loanShield.loanShield.dto.LoanRequestDTO;
@@ -8,6 +9,7 @@ import com.loanShield.loanShield.mapper.CreditBureauMapper;
 import com.loanShield.loanShield.mapper.LoanRequestMapper;
 import com.loanShield.loanShield.service.LoanRequestService;
 import com.loanShield.loanShield.service.LoanRequestServiceImpl;
+import com.loanShield.loanShield.utils.LoanShieldUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -17,9 +19,11 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -37,6 +41,7 @@ import java.util.List;
         "com.loanShield.loanShield.mapper",
         "com.loanShield.loanShield.repository"
 })
+@Import(NamingStrategyConfig.class)
 public class RequestContentRepositoryTest {
 
     @TestConfiguration
@@ -132,9 +137,28 @@ public class RequestContentRepositoryTest {
         loanRequestDTOS.forEach(System.out::println);
         Assertions.assertEquals(sizeOfRequest, loanRequestDTOS.size());
 
-//        loanRequestDTOS.get(0).setCreditBureauDTO();
+        for (int i = 0; i < allContents.size(); i++) {
+            loanRequestService.saveLoanRequest(loanRequestDTOS.get(i), allContents.get(i));
+        }
 
-        loanRequestService.saveLoanRequest(loanRequestDTOS.get(0), allContents.get(0));
-//        List<LoanRequest> loanRequests = loanRequest
+
+        List<LoanRequest> loanRequestList = loanRequestRepository.findAll();
+
+        for (LoanRequest loanRequest : loanRequestList) {
+
+            List<String> regPersonNamePairs = LoanShieldUtils.generatePairs(
+                    loanRequest.getRegPersonFirstName(),
+                    loanRequest.getRegPersonMiddleName(),
+                    loanRequest.getRegPersonLastName()
+            );
+            regPersonNamePairs.forEach(System.out::println);
+
+            List<String> verifyNamePairs = LoanShieldUtils.generatePairs(
+                    loanRequest.getCreditBureau().getVerifiedNameFirstName(),
+                    loanRequest.getCreditBureau().getVerifiedNameOtherName(),
+                    loanRequest.getCreditBureau().getVerifiedNameSurname());
+            verifyNamePairs.forEach(System.out::println);
+        }
+
     }
 }

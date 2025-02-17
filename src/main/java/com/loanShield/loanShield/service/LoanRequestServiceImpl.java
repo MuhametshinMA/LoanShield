@@ -12,6 +12,9 @@ import com.loanShield.loanShield.repository.LoanRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class LoanRequestServiceImpl implements LoanRequestService {
@@ -25,16 +28,23 @@ public class LoanRequestServiceImpl implements LoanRequestService {
     public void saveLoanRequest(LoanRequestDTO loanRequestDTO, RequestContent requestContent) {
 
         LoanRequest loanRequest = loanRequestMapper.toEntity(loanRequestDTO);
+
         CreditBureau creditBureau = creditBureauMapper.toEntity(loanRequestDTO.getCreditBureauDTO());
 
         creditBureau.setLoanRequest(loanRequest);
-//        List<AccountInfo> accnfoMapper::toEntity)
-//                .toList();
-//        creditBureau.setAccoountInfos = loanRequestDTO.getCreditBureauDTO().getAccount_info().stream()
-//                .map(accountIuntInfos(accountInfos);
         loanRequest.setCreditBureau(creditBureau);
-        loanRequest.setRequestContent(requestContent);
 
+        List<AccountInfo> accountInfos = loanRequestDTO.getCreditBureauDTO().getAccount_info().stream()
+                .map(accountInfoDTO -> {
+                    AccountInfo accountInfo = accountInfoMapper.toEntity(accountInfoDTO);
+                    accountInfo.setCreditBureau(creditBureau);
+                    return accountInfo;
+                })
+                .collect(Collectors.toList());
+
+        creditBureau.setAccountInfos(accountInfos);
+
+        loanRequest.setRequestContent(requestContent);
 
         loanRequestRepository.save(loanRequest);
     }

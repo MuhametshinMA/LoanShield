@@ -1,0 +1,26 @@
+#rename-fields-in-loan-request.yaml
+databaseChangeLog:
+  - changeSet:
+      id: rename-fields
+      author: MaratMuhametshin
+      changes:
+        - renameColumn:
+            tableName: loan_request
+            oldColumnName: loanRequestID
+            newColumnName: loan_request_id
+            columnDataType: VARCHAR(255)
+        - renameColumn:
+            tableName: loan_request
+            oldColumnName: regPerson_firstName
+            newColumnName: reg_person_first_name
+            columnDataType: VARCHAR(255)
+        - renameColumn:
+            tableName: loan_request
+            oldColumnName: regPerson_middleName
+            newColumnName: reg_person_middle_name
+            columnDataType: VARCHAR(255)
+        - renameColumn:
+            tableName: loan_request
+            oldColumnName: regPerson_lastName
+            newColumnName: reg_person_last_name
+            columnDataType: VARCHAR(255)

@@ -4,3 +4,14 @@ databaseChangeLog:
       file: db/changelog/init.yaml
   - include:
       file: db/changelog/add-one-to-one-relationship-credit-bureau-loan-request.yaml
+  - include:
+      file: db/changelog/rename-fields-in-loan-request.yaml
+  - include:
+      file: db/changelog/rename-fields-in-credit_bureau.yaml
+  - include:
+      file: db/changelog/change-relation-credit-bureau-on-account-info.yaml
+  - include:
+      file: db/changelog/add-id-credit-bureau-to-account-info.yaml
+
+
+#add-id-credit-bureau-to-account-info.yaml

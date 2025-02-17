@@ -1,0 +1,31 @@
+#change-relation-credit-bureau-on-account-info.yaml
+databaseChangeLog:
+  - changeSet:
+      id: change-relation-credit-bureau-on-account-info
+      author: MaratMuhametshin
+      comment: Add id_account_info column to credit_bureau to establish a one-to-many relationship with account_info
+
+      changes:
+        - addColumn:
+            tableName: credit_bureau
+            columns:
+              - column:
+                  name: id_account_info
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+
+        - addForeignKeyConstraint:
+            baseTableName: credit_bureau
+            baseColumnNames: id_account_info
+            constraintName: fk_credit_bureau_account_info
+            referencedTableName: account_info
+            referencedColumnNames: id
+
+        - dropForeignKeyConstraint:
+            baseTableName: account_info
+            constraintName: fk_account_info_credit_bureau
+
+        - dropColumn:
+            tableName: account_info
+            columnName: id_credit_bureau

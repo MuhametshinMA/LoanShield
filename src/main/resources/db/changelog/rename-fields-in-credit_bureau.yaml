@@ -1,0 +1,16 @@
+#rename-fields-in-credit_bureau.yaml
+databaseChangeLog:
+  - changeSet:
+      id: rename-fields
+      author: MaratMuhametshin
+      changes:
+        - renameColumn:
+            tableName: credit_bureau
+            oldColumnName: verified_name_firstName
+            newColumnName: verified_name_first_name
+            columnDataType: VARCHAR(255)
+        - renameColumn:
+            tableName: credit_bureau
+            oldColumnName: verified_name_otherName
+            newColumnName: verified_name_other_name
+            columnDataType: VARCHAR(255)

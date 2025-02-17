@@ -26,8 +26,9 @@ public class AccountInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "id_credit_bureau", nullable = false)
-    private Long idCreditBureau;
+    @ManyToOne
+    @JoinColumn(name = "id_credit_bureau", nullable = false)
+    private CreditBureau creditBureau;
 
     @Column(name = "account_number")
     private String accountNumber;
@@ -73,8 +74,4 @@ public class AccountInfo {
 
     @Column(name = "product_type_id")
     private Integer productTypeId;
-
-    @ManyToOne
-    @JoinColumn(name = "id_credit_bureau", insertable = false, updatable = false)
-    private CreditBureau creditBureau;
 }

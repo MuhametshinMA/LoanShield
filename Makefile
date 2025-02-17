@@ -1,5 +1,2 @@
-docker-compose:
-	docker-compose up --build -d
-
-run: docker-compose
+run:
 	mvnw.cmd clean test

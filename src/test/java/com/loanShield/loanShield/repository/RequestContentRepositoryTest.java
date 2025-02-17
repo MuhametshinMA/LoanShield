@@ -141,8 +141,8 @@ public class RequestContentRepositoryTest {
             loanRequestService.saveLoanRequest(loanRequestDTOS.get(i), allContents.get(i));
         }
 
-
         List<LoanRequest> loanRequestList = loanRequestRepository.findAll();
+        Assertions.assertEquals(sizeOfRequest, loanRequestList.size());
 
         for (LoanRequest loanRequest : loanRequestList) {
 
@@ -151,14 +151,15 @@ public class RequestContentRepositoryTest {
                     loanRequest.getRegPersonMiddleName(),
                     loanRequest.getRegPersonLastName()
             );
-            regPersonNamePairs.forEach(System.out::println);
 
             List<String> verifyNamePairs = LoanShieldUtils.generatePairs(
                     loanRequest.getCreditBureau().getVerifiedNameFirstName(),
                     loanRequest.getCreditBureau().getVerifiedNameOtherName(),
                     loanRequest.getCreditBureau().getVerifiedNameSurname());
-            verifyNamePairs.forEach(System.out::println);
-        }
 
+            boolean factor = LoanShieldUtils.calcFactor(regPersonNamePairs, verifyNamePairs);
+
+            System.out.println("расчет фактора: " + factor);
+        }
     }
 }
